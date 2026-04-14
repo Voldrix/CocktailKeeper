@@ -1,0 +1,29 @@
+
+CREATE TABLE `users` (
+  `userid` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `username` char(31) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+  `passwd` binary(60) NOT NULL,
+  `regd` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`userid`),
+  UNIQUE KEY `idxu` (`username`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=ascii COLLATE=ascii_bin;
+
+CREATE TABLE `drinks` (
+  `userid` int(10) unsigned NOT NULL,
+  `drinkid` binary(16) NOT NULL,
+  `name` varchar(127) NOT NULL,
+  `img` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `cdate` datetime NOT NULL DEFAULT current_timestamp(),
+  `mdate` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `imgRes` char(8) CHARACTER SET ascii COLLATE ascii_bin,
+  `primaryLiquor` varchar(63),
+  `ingredientList` varchar(255),
+  `garnish` varchar(127),
+  `glass` varchar(31) CHARACTER SET ascii COLLATE ascii_bin,
+  `tags` varchar(255),
+  `summary` varchar(224),
+  `ingredients` varchar(2047),
+  `instructions` varchar(2047),
+  PRIMARY KEY (`userid`,`drinkid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+

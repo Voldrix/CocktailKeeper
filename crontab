@@ -1,0 +1,2 @@
+# m h  dom mon dow   command
+4 4 * * * curl -s -o /dev/null "http://cocktailkeeper.cc/api/cleanImages/tempOnly"

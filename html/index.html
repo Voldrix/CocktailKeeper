@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang=en><head><meta charset=utf-8>
+<link rel=stylesheet href=/style.css>
+<meta name=theme-color content="#175CA2">
+<meta name=viewport content="width=device-width">
+<title>Cocktail Keeper</title>
+<link rel=icon href=/favicon.ico>
+<script defer src=/scripts.js></script>
+<meta name=description content="">
+</head><body>
+
+<div class=head>
+  <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 498 412"><path d="M244.572 396.117a5.098 5.098 0 0 0-5.096-5.095H64.538a5.098 5.098 0 0 0-5.096 5.095v10.192a5.1 5.1 0 0 0 5.096 5.096h174.938a5.098 5.098 0 0 0 5.096-5.096v-10.192Z"/><path d="M133.004 172.05h38.007v232.366h-38.007z"/><path d="M152.177 202.876 9.594 13.005A7.991 7.991 0 0 1 15.977.217L286.451.013a8.786 8.786 0 0 1 7.04 14.048L152.177 202.876ZM24.163 12.29 152.16 182.739 279.873 12.097l-255.71.193Zm473.086 116.103c0-8.278-6.722-15-15-15H275.451c-8.279 0-15 6.722-15 15 0 8.279 6.721 15 15 15h206.798c8.278 0 15-6.721 15-15Zm0 95.667c0-8.279-6.722-15-15-15H275.451c-8.279 0-15 6.721-15 15s6.721 15 15 15h206.798c8.278 0 15-6.721 15-15Zm0 94.667c0-8.279-6.722-15-15-15H275.451c-8.279 0-15 6.721-15 15 0 8.278 6.721 15 15 15h206.798c8.278 0 15-6.722 15-15Z"/></svg>
+  <a href=/ onclick=home()>Cocktail Keeper</a>
+
+  <svg class="userIcon" onclick="route('login')" viewBox="0 0 380 380" stroke-width="28" xmlns="https://www.w3.org/2000/svg"><circle cx="190px" cy="110px" r="100px"></circle><path d="M30,380 V340 A12 8 0 0 1 350,340 V380"></path></svg>
+
+  <svg class="userIcon" id="gridBtn" onclick="recipeContainer.classList.toggle('grid')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+</div>
+
+<div id=authContainer>
+  <div class=loginContainer id=loginContainer>
+    <div class=welcomeMsg>personal drink recipes<br>minimal, lightweight, fast</div>
+    <input type=text maxlength=1023 id=un placeholder=Username onkeyup="if(event.key === 'Enter') login()">
+    <input type=password maxlength=1023 id=pw placeholder=Password onkeyup="if(event.key === 'Enter') login()">
+    <div id=loginErrMsg></div>
+    <button id=loginBtn onclick=login()>Login</button>
+    <button id=registerBtn onclick=register()>Register</button>
+  </div>
+  <div class=loginContainer id=logoutContainer>
+    <div class=welcomeMsg id=logoutUN></div>
+    <a href=/api/export/myDrinks>Export Recipies (json)</a><br><br>
+    <button id=logoutBtn onclick="logout();route('login')">Logout</button>
+  </div>
+</div>
+
+<div class=controlBar id=controlBar>
+  <div class=barName id=barName></div>
+  <div class=shareLinkNotice id=shareLinkNotice>Copied to Clipboard!</div>
+  <div id=controlBarMain>
+    <div class=searchAndSort>
+      <input type=text id=searchbox oninput=filter() placeholder=Search...>
+      <button onclick=newRecipe(false) id=newDrinkBtn>+Drink</button>
+    </div>
+    <div class=mainControls>
+      <select id=filterLiquor onchange=filter()><option value=''>Liquor</option></select>
+      <select id=filterTag onchange=filter()><option value=''>Tag</option></select>
+      <select id=sortSelect onchange=sort(this.value)><option value=''>Sort</option><option value='alphabetical'>Alphabetical</option><option value='newest'>Newest</option><option value='oldest'>Oldest</option></select>
+    </div>
+  </div>
+  <div id=controlBarView>
+    <button class=cancelBtn onclick=history.back()>Close</button>
+    <svg class="shareIcon" onclick="shareLink()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 480 480"><title>share link</title><circle cx="395px" cy="85px" r="85px"></circle><circle cx="85px" cy="230px" r="85px"></circle><circle cx="280px" cy="395px" r="85px"></circle><path d="M395,85 L85,230 L280,395" stroke-width="64px" fill="none"></path></svg>
+    <button id=cloneRecipeBtn onclick=cloneRecipe()>Clone Recipe</button>
+    <button id=editRecipeBtn onclick=editRecipe(false)>Edit Recipe</button>
+  </div>
+  <div id=controlBarEdit>
+    <button class=cancelBtn onclick=history.back()>Cancel</button>
+    <button id=deleteRecipeBtn onclick=deleteRecipe()>Delete Recipe</button>
+    <button id=saveRecipeBtn onclick=saveRecipe()>Save Recipe</button>
+  </div>
+</div>
+
+<div class=recipeContainer id=recipeContainer></div>
+
+<!-- Edit Recipe -->
+<div class=popup id=editRecipeBox>
+  <h2 id=editDrinkTitle>Edit Drink</h2>
+  <div class=editImgWrap><label for=imgFile><img id=editImg height=156px width=156px><div class=editImgRemove onclick=removeImg(event)>X</div></label></div>
+  <input type=file accept="image/jpeg,image/png,image/webp,image/bmp" id=imgFile onchange=imgUpload()>
+  <div class=flexRowWrapper><h3>Name</h3><input type=text maxlength=127 id=editName placeholder=Name></div>
+  <div class=flexRowWrapper><h3>Summary</h3><textarea id=editSummary oninput="this.style.height=0;this.style.height=this.scrollHeight-5+'px'"></textarea></div>
+  <fieldset><legend>Ingredients</legend>
+    <div id=editIngredients><div class=ingredientRow>
+      <input type=number min=0 step=".01" placeholder=#>
+      <select><option value=''>Unit</option><option value='pt'>pt</option><option value='oz'>oz</option><option value='ml'>ml</option><option value='dash'>dash</option><option value='splash'>splash</option><option value='drops'>drops</option><option value='tsp'>tsp</option><option value='tbsp'>tbsp</option><option value='top off'>top off</option></select>
+      <input type=text class=IngredientText maxlength=255 placeholder=Ingredient oninput=nextIngredient(this)>
+      <input type=text maxlength=255 placeholder="Notes / Brand">
+    </div></div>
+  </fieldset>
+  <div class=flexRowWrapper><h3>Instructions</h3><textarea id=editInstructions oninput="this.style.height=0;this.style.height=this.scrollHeight-5+'px'"></textarea></div>
+  <div class=flexRowWrapper><h3>Garnish</h3><input type=text maxlength=127 id=editGarnish placeholder=Garnish></div>
+  <div class=flexRowWrapper><h3>Glass</h3><img id=editGlassImg><select id=editGlass onchange="editGlassImg.src='/img/glass/'+this.value+'.svg'"><option value=''>Glass</option><option value='Old Fashioned'>Old Fashioned</option><option value='Rocks'>Rocks</option><option value='Cosmopolitan'>Cosmopolitan</option><option value='Highball'>Highball</option><option value='Collins'>Collins</option><option value='Martini'>Martini</option><option value='Margarita'>Margarita</option><option value='Coupe'>Coupe</option><option value='Tulip'>Tulip<option value='Hurricane'>Hurricane</option><option value='Snifter'>Snifter</option><option value='Goblet'>Goblet</option><option value='Flute'>Flute</option><option value='White Wine'>White Wine</option><option value='Red Wine'>Red Wine</option><option value='Coffee'>Coffee</option><option value='Milkshake'>Milkshake</option><option value='Pint'>Pint</option><option value='Beer Mug'>Beer Mug</option><option value='Copper Mug'>Copper Mug</option><option value='Tiki Mug'>Tiki Mug</option><option value='Shot'>Shot</option></select></div>
+  <div class=flexRowWrapper><h3>Meta Tags</h3><div id=editMetaTags></div></div>
+  <div class=flexRowWrapper><h3></h3><select id=editMetaTag onchange=addMetaTag()><option value=''>Add Meta Tag</option></select></div>
+  <div class=flexRowWrapper><h3 id=h3Spacer></h3><input type=text maxlength=63 id=editNewMetaTag onkeyup="if(event.key === 'Enter') addNewMetaTag()" placeholder="Create New Meta Tag"> <button onclick=addNewMetaTag()>Create New Tag</button></div>
+</div>
+
+<!-- View Recipe -->
+<div class=popup id=viewRecipeBox>
+  <img id=drinkImg>
+  <div class=viewRecipeInfoWrapper>
+    <div id=viewName></div>
+    <div id=viewSummary></div>
+    <table class=viewRecipeInfoTable><tbody>
+      <tr><td><h3>Ingredients</h3></td><td></td></tr>
+      <tr><td colspan=2>
+        <table style="margin:auto;"><tbody id=viewIngredients></tbody></table>
+      </td></tr>
+      <tr><td><h3>Instructions</h3></td><td><div id=viewInstructions></div></td></tr>
+      <tr><td><h3>Garnish</h3></td><td><span id=viewGarnish></span></td></tr>
+      <tr><td><h3>Glass</h3></td><td style="white-space:nowrap;"><img id=glassImg> <span id=viewGlass></span></td></tr>
+      <tr><td><h3>Meta Tags</h3></td><td><div id=viewTags></div></td></tr>
+    </tbody></table>
+    <div id=viewDates></div>
+  </div>
+</div>
+
+</body></html>

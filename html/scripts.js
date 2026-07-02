@@ -611,23 +611,23 @@ function filter() {
   var liquor = filterLiquor.value;
   var tag = filterTag.value;
   var search = searchbox.value.toLowerCase();
-  for(drink of recipeContainer.children) {
+  for(_drink of recipeContainer.children) {
     let hide = 3;
-    let pl = drink.getAttribute('primaryliquor');
+    let pl = _drink.getAttribute('primaryliquor');
     hide -= (!liquor || pl === liquor);
     if(hide === 2) {
       if(!tag) hide -= 1;
       else {
-        for(mt of drink.getElementsByClassName('tileTag')) {
+        for(mt of _drink.getElementsByClassName('tileTag')) {
           hide -= (mt.textContent === tag);
         }
       }
     }
     if(hide === 1) {
       if(!search) hide -= 1;
-      else hide -= drink.textContent.toLowerCase().includes(search);
+      else hide -= _drink.textContent.toLowerCase().includes(search);
     }
-    drink.style.display = hide ? 'none' : 'flex';
+    _drink.style.display = hide ? 'none' : 'flex';
   }
 }
 
